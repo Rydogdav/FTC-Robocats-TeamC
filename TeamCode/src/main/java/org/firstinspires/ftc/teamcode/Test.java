@@ -29,11 +29,11 @@ public class Test extends LinearOpMode {
     private ElapsedTime runtime = new ElapsedTime();
     private ElapsedTime liftTimer = new ElapsedTime();
     private ElapsedTime angerTimer = new ElapsedTime();
-    private DcMotor backleftMotor = null;
+    private DcMotor backleftMotor = null;                         //variables set to null before action
     private DcMotor frontleftMotor = null;
     private DcMotor frontrightMotor = null;
     private DcMotor backrightMotor = null;
-    private int gear = 0;
+    private int gear = 0;                                         //gear set to zero before action
 
 
     /*
@@ -43,8 +43,8 @@ public class Test extends LinearOpMode {
 
     @Override
     public void runOpMode() {
-        telemetry.addLine("Power online. All systems ready to roll. TestBed V0.83");
-        frontleftMotor = hardwareMap.dcMotor.get("Front Left Motor");
+        telemetry.addLine("Power online. All systems ready to roll. TestBed V0.83");   //all systems go message
+        frontleftMotor = hardwareMap.dcMotor.get("Front Left Motor");                  //connects motor to phone
         frontrightMotor = hardwareMap.dcMotor.get("Front Right Motor");
         backleftMotor = hardwareMap.dcMotor.get("Back Left Motor");
         backrightMotor = hardwareMap.dcMotor.get("Back Right Motor");
@@ -53,7 +53,7 @@ public class Test extends LinearOpMode {
         backrightMotor.setDirection(DcMotor.Direction.REVERSE);
         frontrightMotor.setDirection(DcMotor.Direction.REVERSE);
 
-        waitForStart();
+        waitForStart();                                          //if the code starts early you get disqualified
         runtime.reset();
     /*
      * Code to run REPEATEDLY after the driver hits INIT, but before they hit PLAY
@@ -73,21 +73,21 @@ public class Test extends LinearOpMode {
             // - This uses basic math to combine motions and is easier to drive straight.
             double drive = -gamepad1.left_stick_y;
             double turn = gamepad1.right_stick_x;
-            leftPower = Range.clip(drive + turn, -1.0, 1.0);
+            leftPower = Range.clip(drive + turn, -1.0, 1.0);           //math converts values to -1 or 1 to prevent conflicts from sticks
             rightPower = Range.clip(drive - turn, -1.0, 1.0);
-            if (gamepad1.left_trigger == 0 && gamepad1.right_trigger == 0) {
+            if (gamepad1.left_trigger == 0 && gamepad1.right_trigger == 0) {   //lowest gear, speed at .15 percent power
                 frontleftMotor.setPower(leftPower * .15);
                 backleftMotor.setPower(leftPower * .15);
                 frontrightMotor.setPower(rightPower * .15);
                 backrightMotor.setPower(rightPower * .15);
             }
-            if (gamepad1.left_trigger == 0 && gamepad1.right_trigger > 1) {
+            if (gamepad1.left_trigger == 0 && gamepad1.right_trigger > 1) {    //middle gear, speed set at half power
                 frontleftMotor.setPower(leftPower * .5);
                 backleftMotor.setPower(leftPower * .5);
                 frontrightMotor.setPower(rightPower * .5);
                 backrightMotor.setPower(rightPower * .5);
             }
-            if (gamepad1.left_trigger > 1 && gamepad1.right_trigger > 1) {
+            if (gamepad1.left_trigger > 1 && gamepad1.right_trigger > 1) {   //highest gear, speed at full power
                 frontleftMotor.setPower(leftPower);
                 backleftMotor.setPower(leftPower);
                 frontrightMotor.setPower(rightPower);
