@@ -55,6 +55,7 @@ public class LiftTest extends LinearOpMode {
         intake2 = hardwareMap.dcMotor.get("Intake 2");
         liftmotor = hardwareMap.dcMotor.get("Lift Motor");
         liftmotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        liftmotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
         //need hardware map for drop servo
 

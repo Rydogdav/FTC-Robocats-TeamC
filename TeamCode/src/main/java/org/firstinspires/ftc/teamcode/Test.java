@@ -10,6 +10,7 @@ import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.GyroSensor;
+import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.TouchSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import java.text.SimpleDateFormat;
@@ -34,6 +35,7 @@ public class Test extends LinearOpMode {
     private DcMotor frontrightMotor = null;
     private DcMotor backrightMotor = null;
     private ColorSensor testColor = null;
+    private Servo jewelArm = null;
     private int gear = 0;   //gear set to zero before action
     private int color = 0;
 
@@ -51,11 +53,20 @@ public class Test extends LinearOpMode {
         backleftMotor = hardwareMap.dcMotor.get("Back Left Motor");
         backrightMotor = hardwareMap.dcMotor.get("Back Right Motor");
         testColor = hardwareMap.colorSensor.get("Color Sensor");
+        jewelArm = hardwareMap.servo.get("Jewel Arm");
+        frontleftMotor.setDirection(DcMotor.Direction.REVERSE);
+        frontrightMotor.setDirection(DcMotor.Direction.FORWARD);
+        frontleftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        frontrightMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        frontleftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        frontrightMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
         testColor.enableLed(true);
 
 
-        backrightMotor.setDirection(DcMotor.Direction.REVERSE);
-        frontrightMotor.setDirection(DcMotor.Direction.REVERSE);
+
+
+
 
         waitForStart();
         //if the code starts early you get disqualified
@@ -76,15 +87,22 @@ public class Test extends LinearOpMode {
 
             // POV Mode uses left stick to go forward, and right stick to turn.
             // - This uses basic math to combine motions and is easier to drive straight.
-                    leftPower = -gamepad1.left_stick_y;
+            leftPower = -gamepad1.left_stick_y;
             rightPower = -gamepad1.right_stick_y;
+            telemetry.addData("Left", frontleftMotor.getCurrentPosition());
+            telemetry.addData("Right", frontrightMotor.getCurrentPosition());
             telemetry.addData("Blue value: ", testColor.blue());
             telemetry.addData("Red value: ", testColor.red());
             telemetry.update();
 
 
 
-
+                if (gamepad1.dpad_up){
+                    jewelArm.setPosition(0);
+                }
+                if (gamepad1.dpad_down){
+                    jewelArm.setPosition(.50);
+                }
 
 
 
@@ -108,6 +126,14 @@ public class Test extends LinearOpMode {
                 backrightMotor.setPower(rightPower);
             } 
 
+            if (gamepad1.y){   //motor reset
+                frontleftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                frontrightMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                frontleftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+                frontrightMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            }
+
+            telemetry.update();
 
 
 
