@@ -28,14 +28,15 @@ import com.qualcomm.robotcore.util.Range;
 
 public class AutoBlueAway extends LinearOpMode {
     /* Declare OpMode members. */
+    /* Declare OpMode members. */
     private ElapsedTime runtime = new ElapsedTime();
     private ElapsedTime liftTimer = new ElapsedTime();
     private ElapsedTime angerTimer = new ElapsedTime();
-    private DcMotor backleftMotor = null;                         //variables set to null before action
-    private DcMotor frontleftMotor = null;
-    private DcMotor frontrightMotor = null;
-    private DcMotor backrightMotor = null;
-    private Servo jewelArm = null;
+    private DcMotor motorBackLeft = null;                         //variables set to null before action
+    private DcMotor motorFrontLeft = null;
+    private DcMotor motorBackRight = null;
+    private DcMotor motorFrontRight = null;
+    private Servo servoJewel = null;
     private ColorSensor testColor = null;
     private int gear = 0;                                         //gear set to zero before action
 
@@ -48,23 +49,21 @@ public class AutoBlueAway extends LinearOpMode {
     @Override
     public void runOpMode() {
         telemetry.addLine("Power online. All systems ready to roll. TestBed V0.83");   //all systems go message
-        frontleftMotor = hardwareMap.dcMotor.get("Front Left Motor");                  //connects motor to phone
-        frontrightMotor = hardwareMap.dcMotor.get("Front Right Motor");
-        backleftMotor = hardwareMap.dcMotor.get("Back Left Motor");
-        backrightMotor = hardwareMap.dcMotor.get("Back Right Motor");
-        jewelArm = hardwareMap.servo.get("Jewel Arm");
+        motorFrontLeft = hardwareMap.dcMotor.get("Front Left Motor");                  //connects motor to phone
+        motorFrontRight = hardwareMap.dcMotor.get("Front Right Motor");
+        motorBackLeft = hardwareMap.dcMotor.get("Back Left Motor");
+        motorBackRight = hardwareMap.dcMotor.get("Back Right Motor");
+        servoJewel = hardwareMap.servo.get("Jewel Arm");
         testColor.enableLed(true);
-        backrightMotor.setDirection(DcMotor.Direction.REVERSE);
-        frontrightMotor.setDirection(DcMotor.Direction.REVERSE);
+        motorBackRight.setDirection(DcMotor.Direction.REVERSE);
+        motorFrontRight.setDirection(DcMotor.Direction.REVERSE);
 
         waitForStart();  //if the code starts early you get disqualified
-
 
 
     /*
      * Code to run REPEATEDLY after the driver hits INIT, but before they hit PLAY
      */
-
 
 
 

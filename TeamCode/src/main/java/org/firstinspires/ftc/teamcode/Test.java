@@ -30,14 +30,15 @@ public class Test extends LinearOpMode {
     private ElapsedTime runtime = new ElapsedTime();
     private ElapsedTime liftTimer = new ElapsedTime();
     private ElapsedTime angerTimer = new ElapsedTime();
-    private DcMotor backleftMotor = null;                         //variables set to null before action
-    private DcMotor frontleftMotor = null;
-    private DcMotor frontrightMotor = null;
-    private DcMotor backrightMotor = null;
+    private DcMotor motorBackLeft = null;                         //variables set to null before action
+    private DcMotor motorFrontLeft = null;
+    private DcMotor motorFrontRight = null;
+    private DcMotor motorBackRight = null;
     private ColorSensor testColor = null;
-    private Servo jewelArm = null;
+    private Servo servoJewel = null;
+    private double servoToAngle = 1/255; //the Ryan algorithm
     private int gear = 0;   //gear set to zero before action
-    private int color = 0;
+    private int color = 0;  //color set to zero before action
 
 
     /*
@@ -48,20 +49,20 @@ public class Test extends LinearOpMode {
     @Override
     public void runOpMode() {
         telemetry.addLine("Power online. All systems ready to roll. TestBed V0.83");   //all systems go message
-        frontleftMotor = hardwareMap.dcMotor.get("Front Left Motor");                  //connects motor to phone
-        frontrightMotor = hardwareMap.dcMotor.get("Front Right Motor");
-        backleftMotor = hardwareMap.dcMotor.get("Back Left Motor");
-        backrightMotor = hardwareMap.dcMotor.get("Back Right Motor");
-        testColor = hardwareMap.colorSensor.get("Color Sensor");
-        jewelArm = hardwareMap.servo.get("Jewel Arm");
-        frontleftMotor.setDirection(DcMotor.Direction.REVERSE);
-        frontrightMotor.setDirection(DcMotor.Direction.FORWARD);
-        frontleftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        frontrightMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        frontleftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        frontrightMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        motorFrontLeft = hardwareMap.dcMotor.get("Front Left Motor");                  //connects motors to phone
+        motorFrontRight = hardwareMap.dcMotor.get("Front Right Motor");
+        motorBackLeft = hardwareMap.dcMotor.get("Back Left Motor");
+        motorBackRight = hardwareMap.dcMotor.get("Back Right Motor");
+        testColor = hardwareMap.colorSensor.get("Color Sensor");                        //connects sensors to phone
+        servoJewel = hardwareMap.servo.get("Jewel Arm");                                  //connects servo to phone
+        motorFrontLeft.setDirection(DcMotor.Direction.REVERSE);
+        motorFrontRight.setDirection(DcMotor.Direction.FORWARD);
+        motorFrontLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        motorFrontRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        motorFrontLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        motorFrontRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
-        testColor.enableLed(true);
+        testColor.enableLed(true); //we're looking for colors, not beacons
 
 
 
@@ -77,7 +78,7 @@ public class Test extends LinearOpMode {
         while (opModeIsActive()) {
 
 
-            telemetry.addData("It's been ", "running Setup1 " + runtime.toString(), " seconds without an issue.");
+            telemetry.addData("It's been ", "running Setup1 " + runtime.toString(), " seconds without an issue."); //more telemetry feedback
 
             double leftPower;
             double rightPower;
@@ -89,74 +90,59 @@ public class Test extends LinearOpMode {
             // - This uses basic math to combine motions and is easier to drive straight.
             leftPower = -gamepad1.left_stick_y;
             rightPower = -gamepad1.right_stick_y;
-            telemetry.addData("Left", frontleftMotor.getCurrentPosition());
-            telemetry.addData("Right", frontrightMotor.getCurrentPosition());
-            telemetry.addData("Blue value: ", testColor.blue());
-            telemetry.addData("Red value: ", testColor.red());
+            telemetry.addData("Left", motorFrontLeft.getCurrentPosition());
+            telemetry.addData("Right", motorFrontRight.getCurrentPosition());
+
+            //for testing purposes only, will only function in autonomous in final
+            telemetry.addData("Blue value: ", testColor.blue()); //blue value detector
+            telemetry.addData("Red value: ", testColor.red()); //red value detector
+
             telemetry.update();
 
 
-
-                if (gamepad1.dpad_up){
-                    jewelArm.setPosition(0);
+                //since this is a test bed and not the final code, these controls test out the jewel arm, which will be used in autonomous
+                if (gamepad1.dpad_up){  //up and out of the way
+                    servoJewel.setPosition(0);
                 }
-                if (gamepad1.dpad_down){
-                    jewelArm.setPosition(.50);
+                if (gamepad1.dpad_down){  //down, ready to knock over the jewel
+                    servoJewel.setPosition(servoToAngle * 128);
                 }
-
 
 
 
             if (gamepad1.right_bumper == false && gamepad1.left_bumper == false) {   //lowest gear, speed at .15 percent power
-                frontleftMotor.setPower(leftPower * .15);
-                backleftMotor.setPower(leftPower * .15);
-                frontrightMotor.setPower(rightPower * .15);
-                backrightMotor.setPower(rightPower * .15);
+                motorFrontLeft.setPower(leftPower * .15);
+                motorBackLeft.setPower(leftPower * .15);
+                motorFrontRight.setPower(rightPower * .15);
+                motorBackRight.setPower(rightPower * .15);
             }
             if (gamepad1.right_bumper == false && gamepad1.left_bumper == true) {    //middle gear, speed set at half power
-                frontleftMotor.setPower(leftPower * .5);
-                backleftMotor.setPower(leftPower * .5);
-                frontrightMotor.setPower(rightPower * .5);
-                backrightMotor.setPower(rightPower * .5);
+                motorFrontLeft.setPower(leftPower * .5);
+                motorBackLeft.setPower(leftPower * .5);
+                motorFrontRight.setPower(rightPower * .5);
+                motorBackRight.setPower(rightPower * .5);
             }
             if (gamepad1.right_bumper == true && gamepad1.left_bumper == true) {   //highest gear, speed at full power
-                frontleftMotor.setPower(leftPower);
-                backleftMotor.setPower(leftPower);
-                frontrightMotor.setPower(rightPower);
-                backrightMotor.setPower(rightPower);
+                motorFrontLeft.setPower(leftPower);
+                motorBackLeft.setPower(leftPower);
+                motorFrontRight.setPower(rightPower);
+                motorBackRight.setPower(rightPower);
             } 
 
             if (gamepad1.y){   //motor reset
-                frontleftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-                frontrightMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-                frontleftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-                frontrightMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+                motorFrontLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                motorFrontRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                motorFrontLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+                motorFrontRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
             }
 
-            telemetry.update();
+
+            telemetry.update();  //feedback is good
 
 
+            //lift system code coming soon.
 
-
-
-
-
-
-
-
-
-
-
-    /*
-     * Code to run ONCE after the driver hits STOP
-     */
-
-
+            //
         }
     }
 }
-
-
-
-
-
