@@ -65,15 +65,16 @@ public class AutoRedNearJewel extends LinearOpMode {
         motorFrontRight = hardwareMap.dcMotor.get("Front Right Motor");
         motorBackLeft = hardwareMap.dcMotor.get("Back Left Motor");
         motorBackRight = hardwareMap.dcMotor.get("Back Right Motor");
-        servoJewel = hardwareMap.servo.get("Jewel Arm");
+        servoJewel = hardwareMap.servo.get("Jewel Servo");
         testColor.enableLed(true);
         motorBackRight.setDirection(DcMotor.Direction.REVERSE);
         motorFrontRight.setDirection(DcMotor.Direction.REVERSE);
 
         waitForStart();  //if the code starts early you get disqualified
+        /*
         servoJewel.setPosition(.5);
         sleep(500);
-        //the color sensor measures the jewel on the right.
+
         if(testColor.blue() > testColor.red()){ // if the sensor picks up more blue then red, we can assume the red jewel is on the right, so we drive forward
             motorFrontLeft.setPower(1);
             motorBackLeft.setPower(1);
@@ -103,7 +104,7 @@ public class AutoRedNearJewel extends LinearOpMode {
             if (vuMark == RelicRecoveryVuMark.CENTER) direction = 2;
             if (vuMark == RelicRecoveryVuMark.RIGHT) direction = 3;
         }
-
+    */
 
     /*
      * Code to run REPEATEDLY after the driver hits INIT, but before they hit PLAY

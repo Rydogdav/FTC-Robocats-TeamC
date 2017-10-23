@@ -49,7 +49,7 @@ public class LiftTest extends LinearOpMode {
 
     @Override
     public void runOpMode() {
-        telemetry.addLine("Power online. All systems ready to roll. TestBed V0.83");   //all systems go message
+        telemetry.addLine("Power online. All systems ready to roll. TestBed V0.9 (Almost lift)");   //all systems go message
         motorFrontLeft = hardwareMap.dcMotor.get("Front Left Motor");                  //connects motor to phone
         motorFrontRight = hardwareMap.dcMotor.get("Front Right Motor");
         motorBackLeft = hardwareMap.dcMotor.get("Back Left Motor");
@@ -57,8 +57,10 @@ public class LiftTest extends LinearOpMode {
         motorIntakeOne = hardwareMap.dcMotor.get("Intake 1");
         motorIntakeTwo = hardwareMap.dcMotor.get("Intake 2");
         motorLift = hardwareMap.dcMotor.get("Lift Motor");
-        motorLift.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        motorLift.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);                      //encoder connections
         motorLift.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        motorFrontLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        motorFrontRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
         //need hardware map for drop servo
 
@@ -77,13 +79,38 @@ public class LiftTest extends LinearOpMode {
 
         while (opModeIsActive()) {
 
-            leftPower = -gamepad1.left_stick_y;
+           leftPower = -gamepad1.left_stick_y;
             rightPower = -gamepad1.right_stick_y;
 
             motorFrontLeft.setPower(leftPower);
             motorBackLeft.setPower(leftPower);
             motorFrontRight.setPower(rightPower);
             motorBackRight.setPower(rightPower);
+            if (gamepad1.a) {
+                motorLift.setPower(.15);
+            }
+            if (gamepad1.b){
+                motorLift.setPower(-.15);
+            }
+            if (!gamepad1.a && !gamepad1.b){
+                motorLift.setPower(0);
+            }
+            if (gamepad1.a && gamepad1.b){
+                motorLift.setPower(0);
+            }
+            if (gamepad1.x){
+                hello();
+                hello2();
+                hello3();
+            }
+
+
+            if (gamepad1.y){   //motor reset
+                motorFrontLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                motorFrontRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                motorFrontLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+                motorFrontRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            }
 
         /*button mapping is as follows
             a = level 1 of the cryptobox
@@ -95,8 +122,8 @@ public class LiftTest extends LinearOpMode {
 
         */
 
-
-            if (gamepad1.a) {
+/*
+          /  if (gamepad1.a) {
                 while (motorLift.getCurrentPosition() > 10) {
                     motorLift.setPower(-.20);
                 }
@@ -118,6 +145,7 @@ public class LiftTest extends LinearOpMode {
                     motorLift.setPower(.20);
                 }
             }
+*/
             if (gamepad1.left_bumper) {
                 motorIntakeOne.setPower(1);
                 motorIntakeTwo.setPower(-1);
@@ -126,10 +154,16 @@ public class LiftTest extends LinearOpMode {
                 motorIntakeOne.setPower(-1);
                 motorIntakeTwo.setPower(1);
             }
+
             if (!gamepad1.left_bumper && !gamepad1.right_bumper) {
                 motorIntakeOne.setPower(0);
                 motorIntakeTwo.setPower(0);
             }
+
+            telemetry.addData("Left", motorFrontLeft.getCurrentPosition());
+            telemetry.addData("Right", motorFrontRight.getCurrentPosition());
+
+
         /*if (gamepad1.right_bumper == false && gamepad1.left_bumper == false) {   //lowest gear, speed at .15 percent power
             motorFrontLeft.setPower(leftPower * .15);
             motorBackLeft.setPower(leftPower * .15);
@@ -151,5 +185,16 @@ public class LiftTest extends LinearOpMode {
 */
 
         }
+
+
     }
-}
+    public void hello() {
+        telemetry.addLine("Hello, world!");
+    }
+    public void hello2() {
+        telemetry.addLine("Bonjour le monde!");
+    }
+    public void hello3() {
+        telemetry.addLine("你好，世界!");
+    }
+    }

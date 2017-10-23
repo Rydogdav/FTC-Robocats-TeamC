@@ -59,7 +59,15 @@ public class AutoRedAway extends LinearOpMode {
 
         waitForStart();  //if the code starts early you get disqualified
 
-
+        motorFrontLeft.setPower(.5);
+        motorFrontRight.setPower(.5);
+        motorBackLeft.setPower(.5);
+        motorBackRight.setPower(.5);
+        sleep(2000);
+        motorFrontLeft.setPower(0);
+        motorFrontRight.setPower(0);
+        motorBackLeft.setPower(0);
+        motorBackRight.setPower(0);
     /*
      * Code to run REPEATEDLY after the driver hits INIT, but before they hit PLAY
      */
