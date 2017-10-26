@@ -103,6 +103,7 @@ public class AutoRedNearJewel extends LinearOpMode {
             if (vuMark == RelicRecoveryVuMark.LEFT) direction = 1;
             if (vuMark == RelicRecoveryVuMark.CENTER) direction = 2;
             if (vuMark == RelicRecoveryVuMark.RIGHT) direction = 3;
+            idle();
         }
     */
 

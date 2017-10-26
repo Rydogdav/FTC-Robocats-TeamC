@@ -9,6 +9,7 @@ import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.GyroSensor;
+import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.TouchSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import java.text.SimpleDateFormat;
@@ -36,6 +37,8 @@ public class LiftTest extends LinearOpMode {
     private DcMotor motorBackRight = null;
     private DcMotor motorIntakeOne = null;
     private DcMotor motorIntakeTwo = null;
+    private Servo servoJewel = null;
+    private double servoToAngle = 1/255; //the Ryan algorithm
     private DcMotor motorLift = null;
 
     //Need a servo variable here
@@ -57,6 +60,7 @@ public class LiftTest extends LinearOpMode {
         motorIntakeOne = hardwareMap.dcMotor.get("Intake 1");
         motorIntakeTwo = hardwareMap.dcMotor.get("Intake 2");
         motorLift = hardwareMap.dcMotor.get("Lift Motor");
+        servoJewel = hardwareMap.servo.get("Jewel Servo");
         motorLift.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);                      //encoder connections
         motorLift.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         motorFrontLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
@@ -81,6 +85,13 @@ public class LiftTest extends LinearOpMode {
 
            leftPower = -gamepad1.left_stick_y;
             rightPower = -gamepad1.right_stick_y;
+
+            if (gamepad1.dpad_up){  //up and out of the way
+                servoJewel.setPosition(0);
+            }
+            if (gamepad1.dpad_down){  //down, ready to knock over the jewel
+                servoJewel.setPosition(servoToAngle * 128);
+            }
 
             motorFrontLeft.setPower(leftPower);
             motorBackLeft.setPower(leftPower);
@@ -162,7 +173,7 @@ public class LiftTest extends LinearOpMode {
 
             telemetry.addData("Left", motorFrontLeft.getCurrentPosition());
             telemetry.addData("Right", motorFrontRight.getCurrentPosition());
-
+            telemetry.update();
 
         /*if (gamepad1.right_bumper == false && gamepad1.left_bumper == false) {   //lowest gear, speed at .15 percent power
             motorFrontLeft.setPower(leftPower * .15);
@@ -182,8 +193,7 @@ public class LiftTest extends LinearOpMode {
             motorFrontRight.setPower(rightPower);
             motorBackRight.setPower(rightPower);
         }
-*/
-
+*/       idle();
         }
 
 
