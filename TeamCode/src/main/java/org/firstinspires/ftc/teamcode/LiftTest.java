@@ -9,6 +9,7 @@ import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.GyroSensor;
+//import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.TouchSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
@@ -28,21 +29,20 @@ import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 
 public class LiftTest extends LinearOpMode {
     /* Declare OpMode members. */
-    private ElapsedTime runtime = new ElapsedTime();
-    private ElapsedTime liftTimer = new ElapsedTime();
-    private ElapsedTime angerTimer = new ElapsedTime();
-    private DcMotor motorBackLeft = null;                         //variables set to null before action
-    private DcMotor motorFrontLeft = null;
-    private DcMotor motorFrontRight = null;
-    private DcMotor motorBackRight = null;
-    private DcMotor motorIntakeOne = null;
-    private DcMotor motorIntakeTwo = null;
-    private Servo servoJewel = null;
-    private double servoToAngle = 1/255; //the Ryan algorithm
-    private DcMotor motorLift = null;
+    public ElapsedTime runtime = new ElapsedTime();
+    public ElapsedTime liftTimer = new ElapsedTime();
+    public ElapsedTime angerTimer = new ElapsedTime();
+    public DcMotor motorBackLeft = null;                         //variables set to null before action
+    public DcMotor motorFrontLeft = null;
+    public DcMotor motorFrontRight = null;
+    public DcMotor motorBackRight = null;
+    public DcMotor motorIntakeOne = null;
+    public DcMotor motorIntakeTwo = null;
+    public Servo servoJewel = null;
+   // public double servoToAngle = 1.0/255.0; //the Ryan algorithm
+    public DcMotor motorLift = null;
 
     //Need a servo variable here
-    private int gear = 0;                                         //gear set to zero before action
 
 
     /*
@@ -61,53 +61,64 @@ public class LiftTest extends LinearOpMode {
         motorIntakeTwo = hardwareMap.dcMotor.get("Intake 2");
         motorLift = hardwareMap.dcMotor.get("Lift Motor");
         servoJewel = hardwareMap.servo.get("Jewel Servo");
+
         motorLift.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);                      //encoder connections
         motorLift.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         motorFrontLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         motorFrontRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        motorBackLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        motorBackRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
         //need hardware map for drop servo
 
 
         motorBackRight.setDirection(DcMotor.Direction.REVERSE);
         motorFrontRight.setDirection(DcMotor.Direction.REVERSE);
+
         //servo stuff needed
         double leftPower;
         double rightPower;
-        int bheight = 0;
-        int cheight = 0;
-        int dheight = 0;
+
+        double speedVar = 0.7;
         waitForStart();
         //if the code starts early you get disqualified
         runtime.reset();
 
         while (opModeIsActive()) {
 
-           leftPower = -gamepad1.left_stick_y;
+            leftPower = -gamepad1.left_stick_y;
             rightPower = -gamepad1.right_stick_y;
 
-            if (gamepad1.dpad_up){  //up and out of the way
+          /*  if (gamepad1.dpad_up){  //up and out of the way
                 servoJewel.setPosition(0);
+                idle();
             }
             if (gamepad1.dpad_down){  //down, ready to knock over the jewel
-                servoJewel.setPosition(servoToAngle * 128);
-            }
+                servoJewel.setPosition(servoToAngle * 128.0);
+                idle();
 
-            motorFrontLeft.setPower(leftPower);
-            motorBackLeft.setPower(leftPower);
-            motorFrontRight.setPower(rightPower);
-            motorBackRight.setPower(rightPower);
+            }
+*/
+            motorFrontLeft.setPower(leftPower * speedVar);
+            motorBackLeft.setPower(leftPower * speedVar);
+            motorFrontRight.setPower(rightPower * speedVar);
+            motorBackRight.setPower(rightPower * speedVar);
+
             if (gamepad1.a) {
                 motorLift.setPower(.15);
+                idle();
             }
             if (gamepad1.b){
                 motorLift.setPower(-.15);
+                idle();
             }
             if (!gamepad1.a && !gamepad1.b){
                 motorLift.setPower(0);
+                idle();
             }
             if (gamepad1.a && gamepad1.b){
                 motorLift.setPower(0);
+                idle();
             }
             if (gamepad1.x){
                 hello();
@@ -115,12 +126,20 @@ public class LiftTest extends LinearOpMode {
                 hello3();
             }
 
+           if (gamepad1.dpad_right){
+               servoJewel.setPosition(0);
+           }
+            if (gamepad1.dpad_left){
+                servoJewel.setPosition(.65);
+            }
+
 
             if (gamepad1.y){   //motor reset
                 motorFrontLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
                 motorFrontRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-                motorFrontLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-                motorFrontRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+                motorBackLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+                motorBackRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+                idle();
             }
 
         /*button mapping is as follows
@@ -160,40 +179,39 @@ public class LiftTest extends LinearOpMode {
             if (gamepad1.left_bumper) {
                 motorIntakeOne.setPower(1);
                 motorIntakeTwo.setPower(-1);
+                idle();
             }
             if (gamepad1.right_bumper) {
                 motorIntakeOne.setPower(-1);
                 motorIntakeTwo.setPower(1);
+                idle();
             }
-
             if (!gamepad1.left_bumper && !gamepad1.right_bumper) {
                 motorIntakeOne.setPower(0);
                 motorIntakeTwo.setPower(0);
+                idle();
             }
 
-            telemetry.addData("Left", motorFrontLeft.getCurrentPosition());
-            telemetry.addData("Right", motorFrontRight.getCurrentPosition());
+            telemetry.addData("FrontLeftPos", motorFrontLeft.getCurrentPosition());
+            telemetry.addData("FrontRightPos", motorFrontRight.getCurrentPosition());
+            telemetry.addData("BackLeftPos", motorBackLeft.getCurrentPosition());
+            telemetry.addData("BackRightPos", motorBackRight.getCurrentPosition());
             telemetry.update();
 
-        /*if (gamepad1.right_bumper == false && gamepad1.left_bumper == false) {   //lowest gear, speed at .15 percent power
-            motorFrontLeft.setPower(leftPower * .15);
-            motorBackLeft.setPower(leftPower * .15);
-            motorFrontRight.setPower(rightPower * .15);
-            motorBackRight.setPower(rightPower * .15);
-        }
-        if (gamepad1.right_bumper == false && gamepad1.left_bumper == true) {    //middle gear, speed set at half power
-            motorFrontLeft.setPower(leftPower * .5);
-            motorBackLeft.setPower(leftPower * .5);
-            motorFrontRight.setPower(rightPower * .5);
-            motorBackRight.setPower(rightPower * .5);
-        }
-        if (gamepad1.right_bumper == true && gamepad1.left_bumper == true) {   //highest gear, speed at full power
-            motorFrontLeft.setPower(leftPower);
-            motorBackLeft.setPower(leftPower);
-            motorFrontRight.setPower(rightPower);
-            motorBackRight.setPower(rightPower);
-        }
-*/       idle();
+            if(gamepad1.left_trigger >= 0.5){                                     //Eventually trigger shift will be working,  as of 11/28/17, motors are not running. fix it!!!!!!!
+                speedVar = speedVar * 0.6;
+
+            }
+
+            else if(gamepad1.right_trigger >= 0.5){
+                speedVar = speedVar * 1.4;
+
+            }
+            else{
+                speedVar = 0.7;
+            }
+
+      idle();
         }
 
 

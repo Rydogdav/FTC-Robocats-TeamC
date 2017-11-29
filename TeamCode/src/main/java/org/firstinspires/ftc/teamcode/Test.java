@@ -54,7 +54,7 @@ public class Test extends LinearOpMode {
         motorBackLeft = hardwareMap.dcMotor.get("Back Left Motor");
         motorBackRight = hardwareMap.dcMotor.get("Back Right Motor");
         testColor = hardwareMap.colorSensor.get("Color Sensor");                        //connects sensors to phone
-        servoJewel = hardwareMap.servo.get("Jewel Arm");                                  //connects servo to phone
+        servoJewel = hardwareMap.servo.get("Jewel Servo");                                  //connects servo to phone
         motorFrontLeft.setDirection(DcMotor.Direction.REVERSE);
         motorFrontRight.setDirection(DcMotor.Direction.FORWARD);
         motorFrontLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
