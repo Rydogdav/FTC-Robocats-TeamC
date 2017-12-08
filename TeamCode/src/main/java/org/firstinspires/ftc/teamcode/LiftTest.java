@@ -10,6 +10,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.GyroSensor;
 //import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.TouchSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
@@ -32,15 +33,8 @@ public class LiftTest extends LinearOpMode {
     public ElapsedTime runtime = new ElapsedTime();
     public ElapsedTime liftTimer = new ElapsedTime();
     public ElapsedTime angerTimer = new ElapsedTime();
-    public DcMotor motorBackLeft = null;                         //variables set to null before action
-    public DcMotor motorFrontLeft = null;
-    public DcMotor motorFrontRight = null;
-    public DcMotor motorBackRight = null;
-    public DcMotor motorIntakeOne = null;
-    public DcMotor motorIntakeTwo = null;
-    public Servo servoJewel = null;
    // public double servoToAngle = 1.0/255.0; //the Ryan algorithm
-    public DcMotor motorLift = null;
+    RobotHardware robot = new RobotHardware();
 
     //Need a servo variable here
 
@@ -52,8 +46,9 @@ public class LiftTest extends LinearOpMode {
 
     @Override
     public void runOpMode() {
-        telemetry.addLine("Power online. All systems ready to roll. TestBed V0.9 (Almost lift)");   //all systems go message
-        motorFrontLeft = hardwareMap.dcMotor.get("Front Left Motor");                  //connects motor to phone
+        robot.init(hardwareMap);
+        telemetry.addLine("Power online. All systems ready to roll. TestBed V3");   //all systems go message
+     /*   motorFrontLeft = hardwareMap.dcMotor.get("Front Left Motor");                  //connects motor to phone
         motorFrontRight = hardwareMap.dcMotor.get("Front Right Motor");
         motorBackLeft = hardwareMap.dcMotor.get("Back Left Motor");
         motorBackRight = hardwareMap.dcMotor.get("Back Right Motor");
@@ -73,7 +68,8 @@ public class LiftTest extends LinearOpMode {
 
 
         motorBackRight.setDirection(DcMotor.Direction.REVERSE);
-        motorFrontRight.setDirection(DcMotor.Direction.REVERSE);
+        motorFrontRight.setDirection(DcMotor.Direction.REVERSE); */
+
 
         //servo stuff needed
         double leftPower;
@@ -89,35 +85,41 @@ public class LiftTest extends LinearOpMode {
             leftPower = -gamepad1.left_stick_y;
             rightPower = -gamepad1.right_stick_y;
 
-          /*  if (gamepad1.dpad_up){  //up and out of the way
-                servoJewel.setPosition(0);
-                idle();
-            }
-            if (gamepad1.dpad_down){  //down, ready to knock over the jewel
-                servoJewel.setPosition(servoToAngle * 128.0);
-                idle();
 
-            }
-*/
-            motorFrontLeft.setPower(leftPower * speedVar);
-            motorBackLeft.setPower(leftPower * speedVar);
-            motorFrontRight.setPower(rightPower * speedVar);
-            motorBackRight.setPower(rightPower * speedVar);
+            robot.motorFrontLeft.setPower(leftPower);
+            robot.motorBackLeft.setPower(leftPower);
+            robot.motorFrontRight.setPower(rightPower);
+            robot.motorBackRight.setPower(rightPower);
+
+            /*BUTTON MAPPING
+            LSTICK -------- LEFT MOTORS
+            RSTICK -------- RIGHT MOTORS
+            LBUMPER ------- SPEED UP
+            RBUMPER ------- SLOW DOWN
+            LTRIGGER ------ LIFT WHEEL INTAKE
+            RTRIGGER ------ LIFT WHEEL OUTTAKE
+            A ------------- LIFT SYSTEM UP
+            B ------------- LIFT SYSTEM DOWN
+            X ------------- HELLO WORLD
+            Y ------------- MOTOR RESET
+
+
+             */
 
             if (gamepad1.a) {
-                motorLift.setPower(.15);
+                robot.motorLift.setPower(.15);
                 idle();
             }
             if (gamepad1.b){
-                motorLift.setPower(-.15);
+                robot.motorLift.setPower(-.15);
                 idle();
             }
             if (!gamepad1.a && !gamepad1.b){
-                motorLift.setPower(0);
+                robot.motorLift.setPower(0);
                 idle();
             }
             if (gamepad1.a && gamepad1.b){
-                motorLift.setPower(0);
+                robot.motorLift.setPower(0);
                 idle();
             }
             if (gamepad1.x){
@@ -127,90 +129,61 @@ public class LiftTest extends LinearOpMode {
             }
 
            if (gamepad1.dpad_right){
-               servoJewel.setPosition(0);
+               robot.servoJewel.setPosition(0);
            }
             if (gamepad1.dpad_left){
-                servoJewel.setPosition(.65);
+                robot.servoJewel.setPosition(.65);
             }
 
 
             if (gamepad1.y){   //motor reset
-                motorFrontLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-                motorFrontRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-                motorBackLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-                motorBackRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+                robot.motorFrontLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                robot.motorFrontRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                robot.motorBackLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+                robot.motorBackRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+                robot.motorBackRight.setDirection(DcMotor.Direction.REVERSE);
+                robot.motorFrontRight.setDirection(DcMotor.Direction.REVERSE);
                 idle();
             }
 
-        /*button mapping is as follows
-            a = level 1 of the cryptobox
-            b = level 2 of the cryptobox
-            x = level 3 of the cryptobox
-            y = level 4 of the cryptobox
-            left bumper = intake glyph
-            right bumper = spit out glyph
 
-        */
 
-/*
-          /  if (gamepad1.a) {
-                while (motorLift.getCurrentPosition() > 10) {
-                    motorLift.setPower(-.20);
-                }
-                motorLift.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-                motorLift.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-            }
-            if (gamepad1.b) {
-                while (motorLift.getCurrentPosition() < bheight) {
-                    motorLift.setPower(.20);
-                }
-            }
-            if (gamepad1.x) {
-                while (motorLift.getCurrentPosition() < cheight) {
-                    motorLift.setPower(.20);
-                }
-            }
-            if (gamepad1.y) {
-                while (motorLift.getCurrentPosition() < dheight) {
-                    motorLift.setPower(.20);
-                }
-            }
-*/
             if (gamepad1.left_bumper) {
-                motorIntakeOne.setPower(1);
-                motorIntakeTwo.setPower(-1);
+                robot.motorIntakeOne.setPower(1);
+                robot.motorIntakeTwo.setPower(-1);
                 idle();
             }
             if (gamepad1.right_bumper) {
-                motorIntakeOne.setPower(-1);
-                motorIntakeTwo.setPower(1);
+                robot.motorIntakeOne.setPower(-1);
+                robot.motorIntakeTwo.setPower(1);
                 idle();
             }
             if (!gamepad1.left_bumper && !gamepad1.right_bumper) {
-                motorIntakeOne.setPower(0);
-                motorIntakeTwo.setPower(0);
+                robot.motorIntakeOne.setPower(0);
+                robot.motorIntakeTwo.setPower(0);
                 idle();
             }
 
-            telemetry.addData("FrontLeftPos", motorFrontLeft.getCurrentPosition());
-            telemetry.addData("FrontRightPos", motorFrontRight.getCurrentPosition());
-            telemetry.addData("BackLeftPos", motorBackLeft.getCurrentPosition());
-            telemetry.addData("BackRightPos", motorBackRight.getCurrentPosition());
+            telemetry.addData("FrontLeftPos", robot.motorFrontLeft.getCurrentPosition());
+            telemetry.addData("FrontRightPos", robot.motorFrontRight.getCurrentPosition());
+            telemetry.addData("BackLeftPos", robot.motorBackLeft.getCurrentPosition());
+            telemetry.addData("BackRightPos", robot.motorBackRight.getCurrentPosition());
             telemetry.update();
-
+    /*
             if(gamepad1.left_trigger >= 0.5){                                     //Eventually trigger shift will be working,  as of 11/28/17, motors are not running. fix it!!!!!!!
                 speedVar = speedVar * 0.6;
-
+                idle();
             }
 
             else if(gamepad1.right_trigger >= 0.5){
                 speedVar = speedVar * 1.4;
-
+                idle();
             }
             else{
                 speedVar = 0.7;
+                idle();
             }
-
+    */
       idle();
         }
 
@@ -222,7 +195,6 @@ public class LiftTest extends LinearOpMode {
     public void hello2() {
         telemetry.addLine("Bonjour le monde!");
     }
-    public void hello3() {
-        telemetry.addLine("你好，世界!");
+    public void hello3() { telemetry.addLine("你好，世界!");
     }
     }

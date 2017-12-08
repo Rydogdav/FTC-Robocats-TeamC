@@ -22,7 +22,7 @@ public class AutoRed extends LinearOpMode {
     public ColorSensor colorSensor = null;
     public int gear = 0;                                         //gear set to zero before action
     public ElapsedTime     runtime = new ElapsedTime();
-
+    RobotHardware robot = new RobotHardware();
     public static final double COUNTS_PER_MOTOR_REV  = 1024 ;    // eg: TETRIX Motor Encoder
     // static final double DRIVE_GEAR_REDUCTION = 2.0 ;     // This is < 1.0 if geared UP
     public static final double WHEEL_DIAMETER_INCHES = 4.0 ;     // For figuring circumference
@@ -32,36 +32,21 @@ public class AutoRed extends LinearOpMode {
 
     @Override
     public void runOpMode() {
-
-        motorFrontLeft = hardwareMap.get(DcMotor.class, "Front Left Motor");
+        robot.init(hardwareMap);
+       /* motorFrontLeft = hardwareMap.get(DcMotor.class, "Front Left Motor");
         motorBackLeft = hardwareMap.get(DcMotor.class, "Back Left Motor");
         motorFrontRight = hardwareMap.get(DcMotor.class, "Front Right Motor");
         motorBackRight = hardwareMap.get(DcMotor.class, "Back Right Motor");
 
         servoJewel = hardwareMap.get(Servo.class, "Jewel Servo");
 
-        colorSensor = hardwareMap.get(ColorSensor.class, "Color Sensor");
+        colorSensor = hardwareMap.get(ColorSensor.class, "Color Sensor"); */
 
 
-        telemetry.addData("Status", "Resetting Encoders");    //
-        telemetry.update();
-
-       // motorBackLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-      //  motorBackRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-       // motorFrontLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-      //  motorFrontRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-
-      motorBackLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        motorFrontLeft.setDirection(DcMotorSimple.Direction.REVERSE);
-        motorBackLeft.setDirection(DcMotorSimple.Direction.REVERSE);
 
         waitForStart();
 
-        // Step through each leg of the path,
-        // Note: Reverse movement is obtained by setting a negative distance (not speed)
-        // encoderDrive(DRIVE_SPEED,  48,  48, 5.0);  // S1: Forward 47 Inches with 5 Sec timeout
-        //encoderDrive(TURN_SPEED,   12, -12, 4.0);  // S2: Turn Right 12 Inches with 4 Sec timeout
-        //encoderDrive(DRIVE_SPEED, -24, -24, 4.0);  // S3: Reverse 24 Inches with 4 Sec timeout
+
         servoJewel.setPosition(.5);
         sleep(1000);     // pause for servos to move
         if(colorSensor.blue() > colorSensor.red()){ // if the sensor picks up more blue then red, we can assume the red jewel is on the right, so we drive forward
