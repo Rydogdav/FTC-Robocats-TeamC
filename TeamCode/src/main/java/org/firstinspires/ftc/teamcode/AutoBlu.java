@@ -42,7 +42,7 @@ public class AutoBlu extends LinearOpMode {
 
 
         robot.servoJewel.setPosition(0.1);
-        sleep(1000);     // pause for servos to move
+        sleep(2000);     // pause for servos to move
         if (colorSensor.blue() < colorSensor.red()) { // if the sensor picks up more blue then red, we can assume the red jewel is on the right, so we drive forward
             robot.motorFrontLeft.setPower(-1);
             robot.motorBackLeft.setPower(-1);
